@@ -18,9 +18,9 @@ from ethereum.keys import decode_keystore_json
 import rlp
 
 ###########################################################################
-WALLET_FILENAME = '/Users/virgil/.rinkeby/keystore/UTC--2017-06-06T03-28-32.862694163Z--1fd8e0100a2e6e9514f7c65eb8d581f89a659795'
-WALLET_PASSWORD = 'jvks9KXnztX'
-WALLET_ADDRESS = '1fd8e0100a2e6e9514f7c65eb8d581f89a659795'
+WALLET_FILENAME = '/Users/lentan/.rinkeby/keystore/UTC--2017-06-07T12-02-06.895693875Z--994fa890394dbb6301695476b53817f03b230ed5'
+WALLET_PASSWORD = 'this right here is a very secure passphrase'
+WALLET_ADDRESS = '994fa890394dbb6301695476b53817f03b230ed5'
 ETHVPN_CONTRACT_ADDRESS = '0x71f3abc045c3e73010ef46042553c66bb7f7a320'
 INFURA_HOST = 'https://rinkeby.infura.io/NdB5PCo5IksWiI1KdMIw'
 ETHVPN_ABI_FILENAME = 'ethvpn.json'
@@ -65,7 +65,7 @@ def genTransactionHex(target, wallet_privatekey, amount, nonce=0, gasprice=24000
     # if amount if a float digit, we presumably just meant it to be an integer
     if type(amount) is float and amount.isdigit():
         amount = int(amount)
-    
+
     tx = transactions.Transaction(nonce, gasprice, startgas, target, amount, b'').sign(wallet_privatekey)
 
     z = hexlify( rlp.encode(tx) )
@@ -100,9 +100,9 @@ if __name__ == '__main__':
     #print_local_wallets( web3.eth.accounts )
 
     sys.stdout.flush()
-    
+
     infura.eth.defaultAccount = WALLET_ADDRESS
-    
+
     ethvpn = infura.eth.contract(abi=contractABI, address=ETHVPN_CONTRACT_ADDRESS)
 
     while True:
@@ -122,7 +122,7 @@ if __name__ == '__main__':
             print( "Listing all VPNS\n" )
             no_vpns = ethvpn.call().getNumberOfVPN()
             print( "The number of VPNs: %d\n" % no_vpns )
-            for index in range(no_vpns):                    
+            for index in range(no_vpns):
                 print( "VPN", index, "info:", str(ethvpn.call().getVPNInfo(index)) )
 
         # register a VPN
@@ -132,7 +132,7 @@ if __name__ == '__main__':
                 print( "Invalid. Expecting 6 arguments: IP, bandwidth, region, maxuser, accepting, fare per hour \n" )
             else:
                 print( "Registering a VPN at IP:", args[1], "bandwidth", args[1], "Mbps", args[2], "region", args[3], "maxuser", args[4], "accepting:", args[5], "fare", args[6], "per hour\n" )
-            
+
             infura.personal.unlockAccount(web3.eth.defaultAccount, WALLET_PASSWORD)
             txAddr = ethvpn.transact({'from': web3.eth.defaultAccount, 'gas': 2000000}).registerVPN(str(args[1]),\
                 int(args[2]), str(args[3]), int(args[4]), bool(int(args[5])), int(args[6]))
@@ -164,7 +164,7 @@ if __name__ == '__main__':
             raw_txn = genTransactionHex( ETHVPN_CONTRACT_ADDRESS, wallet_privatekey, amount_wei, startgas=1000000 )
 
             txAddr = infura.eth.sendRawTransaction( raw_txn )
-            
+
             print( "Done, TX's ID:", txAddr , "\n" )
 
         #view status of rent request
@@ -181,7 +181,7 @@ if __name__ == '__main__':
                 print( "Invalid! Expect 2 arguments: reqIndex and loginInfo.\n" )
                 continue
             print( "Accepting rent request no:", args[1], "with loginInfo", args[2], "\n" )
-            
+
             infura.personal.unlockAccount(infura.eth.defaultAccount, WALLET_PASSWORD)
             txAddr = ethvpn.transact({'from': infura.eth.defaultAccount, 'gas': 1000000}).acceptRentRequest(int(args[1]), args[2])
             print( "Done, TX's ID: %s\n" % txAddr )
@@ -197,5 +197,3 @@ if __name__ == '__main__':
             print( "Done, TX's ID: %s\n" %txAddr )
         else:
             print( "Invalid command!\n" )
-
-

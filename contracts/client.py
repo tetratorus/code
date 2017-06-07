@@ -12,7 +12,7 @@ from web3.utils.compat import (
 from pprint import pprint
 
 ###########################################################################
-unlockpassword = "ethvpn" # other password: jvks9KXnztX
+unlockpassword = "this right here is a very secure passphrase" # other password: jvks9KXnztX
 ethvpnAddress = "0x71f3abc045c3e73010ef46042553c66bb7f7a320"
 ###########################################################################
 
@@ -23,13 +23,13 @@ if __name__ == '__main__':
     web3 = Web3( KeepAliveRPCProvider(host='localhost', port='8545') )
 
     web3.eth.defaultAccount = web3.eth.accounts[0]
-    
+
     json_data=open("ethvpn.json").read()
     contractABI = json.loads(json_data)
     ethvpn = web3.eth.contract(abi=contractABI, address=ethvpnAddress)
 
     while True:
-        input_line = input("command: ")        
+        input_line = input("command: ")
         if input_line == "exit" or input_line == "quit":
             break
         else:
@@ -40,7 +40,7 @@ if __name__ == '__main__':
                 print( "Listing all VPNS\n" )
                 no_vpns = ethvpn.call().getNumberOfVPN()
                 print( "The number of VPNs: %d\n" % no_vpns )
-                for index in range(no_vpns):                    
+                for index in range(no_vpns):
                     print( "VPN", index, "info:", str(ethvpn.call().getVPNInfo(index)) )
 
             # register a VPN
@@ -94,7 +94,7 @@ if __name__ == '__main__':
                     print( "Invalid! Expect 2 arguments: reqIndex and loginInfo.\n" )
                     continue
                 print( "Accepting rent request no: %s with loginInfo %s\n" %(args[1], args[2]) )
-                
+
                 web3.personal.unlockAccount(web3.eth.defaultAccount, unlockpassword)
                 txAddr = ethvpn.transact({'from': web3.eth.defaultAccount, 'gas': 1000000}).acceptRentRequest(int(args[1]), args[2])
                 print( "Done, TX's ID: %s\n" % txAddr )
@@ -110,5 +110,3 @@ if __name__ == '__main__':
                 print( "Done, TX's ID: %s\n" %txAddr )
             else:
                 print( "Invalid command!\n" )
-
-
